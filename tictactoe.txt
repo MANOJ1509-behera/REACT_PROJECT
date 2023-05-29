@@ -1,0 +1,93 @@
+import { useState } from "react";
+
+export default function Board() {
+  // take a array where we set x and o and how many remaining
+  const [xIsNext, setXisNext] = useState(true);
+  const [squares, setsquares] = useState(Array(9).fill(null));
+
+  function handleClick(i) {
+
+    //first check the position of array is null or not null
+    if(squares[i] != null || calculateWinner(squares)){
+      return;
+    }
+    // create a copy of the squre array insted of direct change in the array
+    const nextSqure = squares.slice();
+
+    if (xIsNext) {
+      nextSqure[i] = "X";
+    } else {
+      nextSqure[i] = "0";
+    }
+    setsquares(nextSqure);
+    setXisNext(!xIsNext);
+  }
+
+  const winner = calculateWinner(squares);
+  let status;
+
+  if(winner){
+    status = "winner" + winner;
+
+  }else{
+    status = "next player "+(xIsNext ? 'X' : 'O');
+  }
+
+  return (
+    <>
+    <div className="status">{status}</div>
+      <div className="board-row">
+        <Squre value={squares[0]} onSqureClick={() => handleClick(0)} />
+        <Squre value={squares[1]} onSqureClick={() => handleClick(1)} />
+        <Squre value={squares[2]} onSqureClick={() => handleClick(2)} />
+      </div>
+      <div className="board-row">
+        <Squre value={squares[3]} onSqureClick={() => handleClick(3)} />
+        <Squre value={squares[4]} onSqureClick={() => handleClick(4)} />
+        <Squre value={squares[5]} onSqureClick={() => handleClick(5)} />
+      </div>
+      <div className="board-row">
+        <Squre value={squares[6]} onSqureClick={() => handleClick(6)} />
+        <Squre value={squares[7]} onSqureClick={() => handleClick(7)} />
+        <Squre value={squares[8]} onSqureClick={() => handleClick(8)} />
+      </div>
+    </>
+  );
+}
+
+function Squre({ value, onSqureClick }) {
+  return (
+    <button classname="squre" onClick={onSqureClick}>
+      {value}
+    </button>
+  );
+}
+
+
+function calculateWinner(squares){
+  const lines=[
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+
+  ];
+
+  /*
+  Next, it checks if the value of squares[a] is not null (indicating that the position is occupied) and if the value of squares[a] is equal to the values at positions b and c. If both conditions are true, it means that the same player has occupied all three positions in the current winning combination, and that player is the winner. In this case, the function returns the value of squares[a], which represents the winning player ("X" or "O").
+
+If none of the winning combinations match the current state of the game board, the function returns null, indicating that there is no winner yet.
+
+  */
+  for(let i=0 ; i< lines.length ; i++){
+    const[a,b,c] = lines[i];
+    if(squares[a] && squares[a] === squares[b] && squares[b] ===squares[c]){
+      return squares[a];
+    }
+  }
+
+}
